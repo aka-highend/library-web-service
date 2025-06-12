@@ -1,5 +1,6 @@
 package com.example.libraryapp.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import java.util.List;
 
@@ -13,6 +14,7 @@ public class Author {
 
     // One author can write many books
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<Book> books;
 
     public Author() {} // Default constructor

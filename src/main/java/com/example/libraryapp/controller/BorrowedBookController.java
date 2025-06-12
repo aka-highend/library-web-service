@@ -1,7 +1,13 @@
 package com.example.libraryapp.controller;
 
+import com.example.libraryapp.dto.BorrowedBookDTO;
+import com.example.libraryapp.model.Book;
 import com.example.libraryapp.model.BorrowedBook;
+import com.example.libraryapp.model.Member;
+import com.example.libraryapp.repository.BookRepository;
 import com.example.libraryapp.repository.BorrowedBookRepository;
+import com.example.libraryapp.repository.MemberRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -10,6 +16,12 @@ import java.util.List;
 @RequestMapping("/api/borrowed")
 public class BorrowedBookController {
     private final BorrowedBookRepository borrowedBookRepository;
+
+    @Autowired
+    private BookRepository bookRepository;
+
+    @Autowired
+    private MemberRepository memberRepository;
 
     public BorrowedBookController(BorrowedBookRepository repository) {
         this.borrowedBookRepository = repository;
@@ -21,8 +33,19 @@ public class BorrowedBookController {
     }
 
     @PostMapping
-    public BorrowedBook create(@RequestBody BorrowedBook entry) {
-        return borrowedBookRepository.save(entry);
+    public BorrowedBook create(@RequestBody BorrowedBookDTO dto) {
+        Book book = bookRepository.findById(dto.getBookId())
+                .orElseThrow(() -> new RuntimeException("Book not found"));
+        Member member = memberRepository.findById(dto.getMemberId())
+                .orElseThrow(() -> new RuntimeException("Member not found"));
+
+        BorrowedBook borrowedBook = new BorrowedBook();
+        borrowedBook.setBorrowDate(dto.getBorrowDate());
+        borrowedBook.setReturnDate(dto.getReturnDate());
+        borrowedBook.setBook(book);
+        borrowedBook.setMember(member);
+
+        return borrowedBookRepository.save(borrowedBook);
     }
 
     @PutMapping("/{id}")
