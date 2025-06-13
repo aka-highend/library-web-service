@@ -3,9 +3,11 @@ package com.example.libraryapp.controller;
 import com.example.libraryapp.model.Book;
 import com.example.libraryapp.repository.BookRepository;
 import org.springframework.web.bind.annotation.*;
-//import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/books")
@@ -17,8 +19,16 @@ public class BookController {
     }
 
     @GetMapping
-    public List<Book> getAllBooks() {
-        return bookRepository.findAll();
+    public List<Map<String, Object>> getAllBooks() {
+        return bookRepository.findAll().stream().map(book -> {
+            Map<String, Object> map = new HashMap<>();
+            map.put("id", book.getId());
+            map.put("title", book.getTitle());
+            map.put("category", book.getCategory());
+            map.put("publishingYear", book.getPublishingYear());
+            map.put("author", book.getAuthor() != null ? book.getAuthor().getName() : "Unknown");
+            return map;
+        }).collect(Collectors.toList());
     }
 
     @PostMapping
