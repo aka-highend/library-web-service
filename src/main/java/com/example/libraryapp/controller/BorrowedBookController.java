@@ -49,14 +49,20 @@ public class BorrowedBookController {
     }
 
     @PutMapping("/{id}")
-    public BorrowedBook update(@PathVariable Long id, @RequestBody BorrowedBook updated) {
+    public BorrowedBook update(@PathVariable Long id, @RequestBody BorrowedBookDTO dto) {
         return borrowedBookRepository.findById(id).map(b -> {
-            b.setBook(updated.getBook());
-            b.setMember(updated.getMember());
-            b.setBorrowDate(updated.getBorrowDate());
-            b.setReturnDate(updated.getReturnDate());
+            Book book = bookRepository.findById(dto.getBookId())
+                    .orElseThrow(() -> new RuntimeException("Book not found"));
+            Member member = memberRepository.findById(dto.getMemberId())
+                    .orElseThrow(() -> new RuntimeException("Member not found"));
+
+            b.setBorrowDate(dto.getBorrowDate());
+            b.setReturnDate(dto.getReturnDate());
+            b.setBook(book);
+            b.setMember(member);
+
             return borrowedBookRepository.save(b);
-        }).orElseThrow();
+        }).orElseThrow(() -> new RuntimeException("BorrowedBook not found"));
     }
 
     @DeleteMapping("/{id}")
