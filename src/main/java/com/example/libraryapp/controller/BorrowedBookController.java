@@ -8,8 +8,10 @@ import com.example.libraryapp.repository.BookRepository;
 import com.example.libraryapp.repository.BorrowedBookRepository;
 import com.example.libraryapp.repository.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -71,7 +73,13 @@ public class BorrowedBookController {
     }
 
     @GetMapping("/search")
-    public List<BorrowedBook> searchBorrowedBooks(@RequestParam String query) {
-        return borrowedBookRepository.findByBook_TitleContainingIgnoreCaseOrMember_NameContainingIgnoreCase(query, query);
+    public List<BorrowedBook> searchBorrowedBooks(
+            @RequestParam(required = false) String bookTitle,
+            @RequestParam(required = false) String memberName,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate borrowDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate returnDate
+    ) {
+        return borrowedBookRepository.search(bookTitle, memberName, borrowDate, returnDate);
     }
+
 }
