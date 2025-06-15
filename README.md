@@ -1,6 +1,6 @@
 # Overview
 
-Library web service CRUD API built using Java, Spring Boot, and MySQL: 
+Library web service API built using Java, Spring Boot, and MySQL: 
 * Authors.
 * Books.
 * Members.
