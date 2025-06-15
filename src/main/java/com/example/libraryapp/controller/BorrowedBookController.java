@@ -1,12 +1,5 @@
 package com.example.libraryapp.controller;
 
-import com.example.libraryapp.dto.BorrowedBookDTO;
-import com.example.libraryapp.model.Book;
-import com.example.libraryapp.model.BorrowedBook;
-import com.example.libraryapp.model.Member;
-import com.example.libraryapp.repository.BookRepository;
-import com.example.libraryapp.repository.BorrowedBookRepository;
-import com.example.libraryapp.repository.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
@@ -14,8 +7,16 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.util.List;
 
+import com.example.libraryapp.dto.BorrowedBookDTO;
+import com.example.libraryapp.model.Book;
+import com.example.libraryapp.model.BorrowedBook;
+import com.example.libraryapp.model.Member;
+import com.example.libraryapp.repository.BookRepository;
+import com.example.libraryapp.repository.BorrowedBookRepository;
+import com.example.libraryapp.repository.MemberRepository;
+
 @RestController
-@RequestMapping("/api/borrowed")
+@RequestMapping("/api")
 public class BorrowedBookController {
     private final BorrowedBookRepository borrowedBookRepository;
 
@@ -29,12 +30,14 @@ public class BorrowedBookController {
         this.borrowedBookRepository = repository;
     }
 
-    @GetMapping
+    // GET: http://localhost:8080/api/borrowed
+    @GetMapping("/borrowed")
     public List<BorrowedBook> getAll() {
         return borrowedBookRepository.findAll();
     }
 
-    @PostMapping
+    // POST: http://localhost:8080/api/add-borrowed
+    @PostMapping("/add-borrowed")
     public BorrowedBook create(@RequestBody BorrowedBookDTO dto) {
         Book book = bookRepository.findById(dto.getBookId())
                 .orElseThrow(() -> new RuntimeException("Book not found"));
@@ -50,7 +53,8 @@ public class BorrowedBookController {
         return borrowedBookRepository.save(borrowedBook);
     }
 
-    @PutMapping("/{id}")
+    // PUT: http://localhost:8080/api/edit-borrowed/{id}
+    @PutMapping("/edit-borrowed/{id}")
     public BorrowedBook update(@PathVariable Long id, @RequestBody BorrowedBookDTO dto) {
         return borrowedBookRepository.findById(id).map(b -> {
             Book book = bookRepository.findById(dto.getBookId())
@@ -67,12 +71,14 @@ public class BorrowedBookController {
         }).orElseThrow(() -> new RuntimeException("BorrowedBook not found"));
     }
 
-    @DeleteMapping("/{id}")
+    // DELETE: http://localhost:8080/api/delete-borrowed/{id}
+    @DeleteMapping("/delete-borrowed/{id}")
     public void delete(@PathVariable Long id) {
         borrowedBookRepository.deleteById(id);
     }
 
-    @GetMapping("/search")
+    // GET: http://localhost:8080/api/borrowed/search
+    @GetMapping("/borrowed/search")
     public List<BorrowedBook> searchBorrowedBooks(
             @RequestParam(required = false) String bookTitle,
             @RequestParam(required = false) String memberName,
@@ -81,5 +87,4 @@ public class BorrowedBookController {
     ) {
         return borrowedBookRepository.search(bookTitle, memberName, borrowDate, returnDate);
     }
-
 }

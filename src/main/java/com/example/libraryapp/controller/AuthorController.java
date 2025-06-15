@@ -1,13 +1,14 @@
 package com.example.libraryapp.controller;
 
-import com.example.libraryapp.model.Author;
-import com.example.libraryapp.repository.AuthorRepository;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import com.example.libraryapp.model.Author;
+import com.example.libraryapp.repository.AuthorRepository;
+
 @RestController
-@RequestMapping("/api/authors")
+@RequestMapping("/api")
 public class AuthorController {
     private final AuthorRepository authorRepository;
 
@@ -15,17 +16,20 @@ public class AuthorController {
         this.authorRepository = authorRepository;
     }
 
-    @GetMapping
+    // GET: http://localhost:8080/api/authors
+    @GetMapping("/authors")
     public List<Author> getAllAuthors() {
         return authorRepository.findAll();
     }
 
-    @PostMapping
+    // POST: http://localhost:8080/api/add-author
+    @PostMapping("/add-author")
     public Author createAuthor(@RequestBody Author author) {
         return authorRepository.save(author);
     }
 
-    @PutMapping("/{id}")
+    // PUT: http://localhost:8080/api/edit-author/{id}
+    @PutMapping("/edit-author/{id}")
     public Author updateAuthor(@PathVariable Long id, @RequestBody Author updatedAuthor) {
         return authorRepository.findById(id).map(author -> {
             author.setName(updatedAuthor.getName());
@@ -33,12 +37,14 @@ public class AuthorController {
         }).orElseThrow();
     }
 
-    @DeleteMapping("/{id}")
+    // DELETE: http://localhost:8080/api/delete-author/{id}
+    @DeleteMapping("/delete-author/{id}")
     public void deleteAuthor(@PathVariable Long id) {
         authorRepository.deleteById(id);
     }
 
-    @GetMapping("/search")
+    // GET: http://localhost:8080/api/authors/search?query=...
+    @GetMapping("/authors/search")
     public List<Author> searchAuthors(@RequestParam String query) {
         return authorRepository.findByNameContainingIgnoreCase(query);
     }

@@ -11,7 +11,7 @@ import com.example.libraryapp.dto.BookDTO;
 import com.example.libraryapp.utils.BookMapper;
 
 @RestController
-@RequestMapping("/api/books")
+@RequestMapping("/api")
 public class BookController {
     private final BookRepository bookRepository;
 
@@ -19,26 +19,30 @@ public class BookController {
         this.bookRepository = bookRepository;
     }
 
-    @GetMapping
+    // GET: http://localhost:8080/api/books
+    @GetMapping("/books")
     public List<BookDTO> getAllBooks() {
         return bookRepository.findAll().stream()
                 .map(BookMapper::toDTO)
                 .collect(Collectors.toList());
     }
 
-    @GetMapping("/search")
+    // GET: http://localhost:8080/api/books/search?query=...
+    @GetMapping("/books/search")
     public List<BookDTO> searchBooks(@RequestParam String query) {
         return bookRepository.findByTitleContainingIgnoreCase(query).stream()
                 .map(BookMapper::toDTO)
                 .collect(Collectors.toList());
     }
 
-    @PostMapping
+    // POST: http://localhost:8080/api/add-book
+    @PostMapping("/add-book")
     public Book createBook(@RequestBody Book book) {
         return bookRepository.save(book);
     }
 
-    @PutMapping("/{id}")
+    // PUT: http://localhost:8080/api/edit-book/{id}
+    @PutMapping("/edit-book/{id}")
     public Book updateBook(@PathVariable Long id, @RequestBody Book updatedBook) {
         return bookRepository.findById(id).map(book -> {
             book.setTitle(updatedBook.getTitle());
@@ -49,7 +53,8 @@ public class BookController {
         }).orElseThrow();
     }
 
-    @DeleteMapping("/{id}")
+    // DELETE: http://localhost:8080/api/delete-book/{id}
+    @DeleteMapping("/delete-book/{id}")
     public void deleteBook(@PathVariable Long id) {
         bookRepository.deleteById(id);
     }
